@@ -1,5 +1,10 @@
 import React from 'react';
-import { WP_GROUP, WP_HEADING, WP_PARAGRAPH, WP_LINK, type PatternMeta } from './wp.js';
+import {
+  WP_GROUP, WP_HEADING, WP_PARAGRAPH, WP_LINK,
+  WP_BUTTONS, WP_BUTTON, WP_COLUMNS, WP_COLUMN,
+  WP_IMAGE, WP_LIST, WP_LIST_ITEM, WP_SEPARATOR, WP_SPACER,
+  type PatternMeta,
+} from './wp.js';
 
 function escapeHtml(value: string): string {
   return value
@@ -94,6 +99,144 @@ function renderLink(props: any): string {
   return `<a href="${href}"${classAttr}>${inner}</a>`;
 }
 
+function renderButtons(props: any): string {
+  const attrs: Record<string, unknown> = {};
+  if (props.className) attrs.className = props.className;
+
+  const classes = ['wp-block-buttons', props.className].filter(Boolean).join(' ');
+  const inner = renderWpNode(props.children);
+
+  return [
+    openBlockComment('buttons', attrs),
+    `<div class="${escapeAttr(classes)}">`,
+    inner,
+    `</div>`,
+    closeBlockComment('buttons'),
+  ].join('\n');
+}
+
+function renderButton(props: any): string {
+  const attrs: Record<string, unknown> = {};
+  if (props.className) attrs.className = props.className;
+
+  const divClasses = ['wp-block-button', props.className].filter(Boolean).join(' ');
+  const href = escapeAttr(props.href ?? '#');
+  const inner = renderWpNode(props.children);
+
+  return [
+    openBlockComment('button', attrs),
+    `<div class="${escapeAttr(divClasses)}"><a class="wp-block-button__link wp-element-button" href="${href}">${inner}</a></div>`,
+    closeBlockComment('button'),
+  ].join('\n');
+}
+
+function renderColumns(props: any): string {
+  const attrs: Record<string, unknown> = {};
+  if (props.className) attrs.className = props.className;
+
+  const classes = ['wp-block-columns', props.className].filter(Boolean).join(' ');
+  const inner = renderWpNode(props.children);
+
+  return [
+    openBlockComment('columns', attrs),
+    `<div class="${escapeAttr(classes)}">`,
+    inner,
+    `</div>`,
+    closeBlockComment('columns'),
+  ].join('\n');
+}
+
+function renderColumn(props: any): string {
+  const attrs: Record<string, unknown> = {};
+  if (props.width) attrs.width = props.width;
+  if (props.className) attrs.className = props.className;
+
+  const classes = ['wp-block-column', props.className].filter(Boolean).join(' ');
+  const styleAttr = props.width ? ` style="flex-basis:${escapeAttr(props.width)}"` : '';
+  const inner = renderWpNode(props.children);
+
+  return [
+    openBlockComment('column', attrs),
+    `<div class="${escapeAttr(classes)}"${styleAttr}>`,
+    inner,
+    `</div>`,
+    closeBlockComment('column'),
+  ].join('\n');
+}
+
+function renderImage(props: any): string {
+  const attrs: Record<string, unknown> = {};
+  if (props.sizeSlug) attrs.sizeSlug = props.sizeSlug;
+  if (props.className) attrs.className = props.className;
+
+  const sizeClass = props.sizeSlug ? `size-${props.sizeSlug}` : '';
+  const classes = ['wp-block-image', sizeClass, props.className].filter(Boolean).join(' ');
+  const src = escapeAttr(props.src ?? '');
+  const alt = escapeAttr(props.alt ?? '');
+
+  return [
+    openBlockComment('image', attrs),
+    `<figure class="${escapeAttr(classes)}"><img src="${src}" alt="${alt}"/></figure>`,
+    closeBlockComment('image'),
+  ].join('\n');
+}
+
+function renderList(props: any): string {
+  const attrs: Record<string, unknown> = {};
+  if (props.ordered) attrs.ordered = true;
+  if (props.className) attrs.className = props.className;
+
+  const tag = props.ordered ? 'ol' : 'ul';
+  const classes = ['wp-block-list', props.className].filter(Boolean).join(' ');
+  const inner = renderWpNode(props.children);
+
+  return [
+    openBlockComment('list', attrs),
+    `<${tag} class="${escapeAttr(classes)}">`,
+    inner,
+    `</${tag}>`,
+    closeBlockComment('list'),
+  ].join('\n');
+}
+
+function renderListItem(props: any): string {
+  const attrs: Record<string, unknown> = {};
+  if (props.className) attrs.className = props.className;
+
+  const classAttr = props.className ? ` class="${escapeAttr(props.className)}"` : '';
+  const inner = renderWpNode(props.children);
+
+  return [
+    openBlockComment('list-item', attrs),
+    `<li${classAttr}>${inner}</li>`,
+    closeBlockComment('list-item'),
+  ].join('\n');
+}
+
+function renderSeparator(props: any): string {
+  const attrs: Record<string, unknown> = {};
+  if (props.className) attrs.className = props.className;
+
+  const classes = ['wp-block-separator has-alpha-channel-opacity', props.className]
+    .filter(Boolean).join(' ');
+
+  return [
+    openBlockComment('separator', attrs),
+    `<hr class="${escapeAttr(classes)}"/>`,
+    closeBlockComment('separator'),
+  ].join('\n');
+}
+
+function renderSpacer(props: any): string {
+  const height: string = props.height ?? '40px';
+
+  return [
+    openBlockComment('spacer', { height }),
+    `<div style="height:${escapeAttr(height)}" aria-hidden="true" class="wp-block-spacer"></div>`,
+    closeBlockComment('spacer'),
+  ].join('\n');
+}
+
 function renderInlineElement(tagName: string, props: any): string {
   if (tagName === 'br') {
     return '<br />';
@@ -144,6 +287,24 @@ export function renderWpNode(node: React.ReactNode): string {
         return renderParagraph(props);
       case WP_LINK:
         return renderLink(props);
+      case WP_BUTTONS:
+        return renderButtons(props);
+      case WP_BUTTON:
+        return renderButton(props);
+      case WP_COLUMNS:
+        return renderColumns(props);
+      case WP_COLUMN:
+        return renderColumn(props);
+      case WP_IMAGE:
+        return renderImage(props);
+      case WP_LIST:
+        return renderList(props);
+      case WP_LIST_ITEM:
+        return renderListItem(props);
+      case WP_SEPARATOR:
+        return renderSeparator(props);
+      case WP_SPACER:
+        return renderSpacer(props);
       case 'strong':
       case 'em':
       case 'span':

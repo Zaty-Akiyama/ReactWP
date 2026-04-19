@@ -1,4 +1,3 @@
-import React from 'react';
 import { WpGroup, WpHeading, WpParagraph, WpLink, type PatternMeta } from '../../lib/wp';
 import styles from './simple-cta.module.css';
 
