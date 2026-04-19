@@ -1,5 +1,6 @@
 import React from 'react';
 import { WpGroup, WpHeading, WpParagraph, WpLink, type PatternMeta } from '../../lib/wp';
+import styles from './simple-cta.module.css';
 
 export const pattern: PatternMeta = {
   title: 'Simple CTA',
@@ -10,11 +11,11 @@ export const pattern: PatternMeta = {
 
 export default function Pattern() {
   return (
-    <WpGroup className="cta-section">
-      <WpHeading level={1}>お問い合わせはこちら</WpHeading>
+    <WpGroup className={styles.section}>
+      <WpHeading level={1} className={styles.title}>お問い合わせはこちら</WpHeading>
       <WpParagraph>Web制作やデザインのご相談を受け付けています。</WpParagraph>
-      <WpParagraph className="cta-actions">
-        <WpLink href="/contact" className="cta-button">
+      <WpParagraph>
+        <WpLink href="/contact" className={styles.button}>
           お問い合わせ
         </WpLink>
       </WpParagraph>

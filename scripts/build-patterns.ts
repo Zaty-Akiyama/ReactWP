@@ -1,9 +1,15 @@
+import { register } from 'node:module';
 import fg from 'fast-glob';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import React from 'react';
 import { renderWpNode, renderPatternPhp } from '../lib/render';
+
+register(
+  pathToFileURL(path.resolve('scripts/css-module-loader.mjs')).href,
+  import.meta.url
+);
 
 async function main() {
   const srcRoot = path.resolve('patterns/_src');
