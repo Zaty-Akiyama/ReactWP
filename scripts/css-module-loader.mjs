@@ -18,7 +18,10 @@ export async function load(url, context, nextLoad) {
   let classMap = {};
   const result = await postcss([
     postcssModules({
-      generateScopedName: '[name]__[local]',
+      generateScopedName(local, filename) {
+        const name = path.basename(filename, '.module.css');
+        return `${name}__${local}`;
+      },
       getJSON(_, json) {
         classMap = json;
       },

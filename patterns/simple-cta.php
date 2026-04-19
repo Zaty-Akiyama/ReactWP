@@ -7,14 +7,14 @@
  */
 ?>
 
-<!-- wp:group {"className":"simple-cta-module__section"} -->
-<div class="wp-block-group simple-cta-module__section">
-<!-- wp:heading {"level":1,"className":"simple-cta-module__title"} -->
-<h1 class="simple-cta-module__title">お問い合わせはこちら</h1>
+<!-- wp:group {"className":"simple-cta__section"} -->
+<div class="wp-block-group simple-cta__section">
+<!-- wp:heading {"level":1,"className":"simple-cta__title"} -->
+<h1 class="simple-cta__title">お問い合わせはこちら</h1>
 <!-- /wp:heading --><!-- wp:paragraph -->
 <p>Web制作やデザインのご相談を受け付けています。</p>
 <!-- /wp:paragraph --><!-- wp:paragraph -->
-<p><a href="/contact" class="simple-cta-module__button">お問い合わせ</a></p>
+<p><a href="/contact" class="simple-cta__button">お問い合わせ</a></p>
 <!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
