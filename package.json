@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build:patterns": "tsx scripts/build-patterns.ts",
+    "watch:patterns": "tsx scripts/watch-patterns.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
