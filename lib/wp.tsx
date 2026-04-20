@@ -14,6 +14,10 @@ export const WP_LIST_ITEM = '__wp_list_item__';
 export const WP_SEPARATOR = '__wp_separator__';
 export const WP_SPACER = '__wp_spacer__';
 
+export function wpSpacing(size: number | string): string {
+  return `var:preset|spacing|${size}`;
+}
+
 export type PatternMeta = {
   title: string;
   slug: string;
@@ -21,54 +25,115 @@ export type PatternMeta = {
   description?: string;
 };
 
-export function WpGroup(props: any) {
-  return React.createElement(WP_GROUP, props, props.children);
+type WithChildren = { children?: React.ReactNode };
+type WithClassName = { className?: string };
+
+type SpacingSides = {
+  top?: string;
+  right?: string;
+  bottom?: string;
+  left?: string;
+};
+
+type SpacingProps = {
+  padding?: string | SpacingSides;
+  margin?: string | SpacingSides;
+};
+
+type WithBlockGap = { blockGap?: string };
+
+type WpGroupProps = WithChildren & WithClassName & SpacingProps & WithBlockGap & {
+  tagName?: string;
+};
+
+type WpHeadingProps = WithChildren & WithClassName & {
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+};
+
+type WpParagraphProps = WithChildren & WithClassName;
+
+type WpLinkProps = WithChildren & WithClassName & {
+  href: string;
+};
+
+type WpButtonsProps = WithChildren & WithClassName & SpacingProps;
+
+type WpButtonProps = WithChildren & WithClassName & {
+  href: string;
+};
+
+type WpColumnsProps = WithChildren & WithClassName & SpacingProps & WithBlockGap;
+
+type WpColumnProps = WithChildren & WithClassName & SpacingProps & {
+  width?: string;
+};
+
+type WpImageProps = WithClassName & {
+  src: string;
+  alt?: string;
+  sizeSlug?: string;
+};
+
+type WpListProps = WithChildren & WithClassName & {
+  ordered?: boolean;
+};
+
+type WpListItemProps = WithChildren & WithClassName;
+
+type WpSeparatorProps = WithClassName;
+
+type WpSpacerProps = {
+  height?: string;
+};
+
+export function WpGroup(props: WpGroupProps) {
+  return React.createElement(WP_GROUP as any, props, props.children);
 }
 
-export function WpHeading(props: any) {
-  return React.createElement(WP_HEADING, props, props.children);
+export function WpHeading(props: WpHeadingProps) {
+  return React.createElement(WP_HEADING as any, props, props.children);
 }
 
-export function WpParagraph(props: any) {
-  return React.createElement(WP_PARAGRAPH, props, props.children);
+export function WpParagraph(props: WpParagraphProps) {
+  return React.createElement(WP_PARAGRAPH as any, props, props.children);
 }
 
-export function WpLink(props: any) {
-  return React.createElement(WP_LINK, props, props.children);
+export function WpLink(props: WpLinkProps) {
+  return React.createElement(WP_LINK as any, props, props.children);
 }
 
-export function WpButtons(props: any) {
-  return React.createElement(WP_BUTTONS, props, props.children);
+export function WpButtons(props: WpButtonsProps) {
+  return React.createElement(WP_BUTTONS as any, props, props.children);
 }
 
-export function WpButton(props: any) {
-  return React.createElement(WP_BUTTON, props, props.children);
+export function WpButton(props: WpButtonProps) {
+  return React.createElement(WP_BUTTON as any, props, props.children);
 }
 
-export function WpColumns(props: any) {
-  return React.createElement(WP_COLUMNS, props, props.children);
+export function WpColumns(props: WpColumnsProps) {
+  return React.createElement(WP_COLUMNS as any, props, props.children);
 }
 
-export function WpColumn(props: any) {
-  return React.createElement(WP_COLUMN, props, props.children);
+export function WpColumn(props: WpColumnProps) {
+  return React.createElement(WP_COLUMN as any, props, props.children);
 }
 
-export function WpImage(props: any) {
-  return React.createElement(WP_IMAGE, props);
+export function WpImage(props: WpImageProps) {
+  return React.createElement(WP_IMAGE as any, props);
 }
 
-export function WpList(props: any) {
-  return React.createElement(WP_LIST, props, props.children);
+export function WpList(props: WpListProps) {
+  return React.createElement(WP_LIST as any, props, props.children);
 }
 
-export function WpListItem(props: any) {
-  return React.createElement(WP_LIST_ITEM, props, props.children);
+export function WpListItem(props: WpListItemProps) {
+  return React.createElement(WP_LIST_ITEM as any, props, props.children);
 }
 
-export function WpSeparator(props: any = {}) {
-  return React.createElement(WP_SEPARATOR, props);
+export function WpSeparator(props: WpSeparatorProps = {}) {
+  return React.createElement(WP_SEPARATOR as any, props);
 }
 
-export function WpSpacer(props: any) {
-  return React.createElement(WP_SPACER, props);
+export function WpSpacer(props: WpSpacerProps) {
+  return React.createElement(WP_SPACER as any, props);
 }

@@ -40,6 +40,52 @@ function closeBlockComment(name: string): string {
   return `<!-- /wp:${name} -->`;
 }
 
+function presetToCss(value: string): string {
+  return value.replace(
+    /^var:preset\|([^|]+)\|(.+)$/,
+    (_, type, key) => `var(--wp--preset--${type}--${key})`
+  );
+}
+
+function resolveSpacing(property: string, value: string | Record<string, string>): {
+  sides: Record<string, string>;
+  css: string;
+} {
+  const sides =
+    typeof value === 'string'
+      ? { top: value, right: value, bottom: value, left: value }
+      : value;
+  const entries = Object.entries(sides).filter(([, v]) => v !== undefined) as [string, string][];
+  const css = entries.map(([k, v]) => `${property}-${k}:${presetToCss(v)}`).join(';');
+  return { sides: Object.fromEntries(entries), css };
+}
+
+type SpacingResult = { attrs: Record<string, unknown>; styleAttr: string };
+
+function buildSpacing(props: { padding?: any; margin?: any; blockGap?: string }): SpacingResult {
+  const styleParts: string[] = [];
+  const spacing: Record<string, unknown> = {};
+
+  if (props.padding) {
+    const { sides, css } = resolveSpacing('padding', props.padding);
+    spacing.padding = sides;
+    styleParts.push(css);
+  }
+  if (props.margin) {
+    const { sides, css } = resolveSpacing('margin', props.margin);
+    spacing.margin = sides;
+    styleParts.push(css);
+  }
+  if (props.blockGap) {
+    spacing.blockGap = props.blockGap;
+    styleParts.push(`gap:${presetToCss(props.blockGap)}`);
+  }
+
+  const attrs = Object.keys(spacing).length > 0 ? { style: { spacing } } : {};
+  const styleAttr = styleParts.length > 0 ? ` style="${escapeAttr(styleParts.join(';'))}"` : '';
+  return { attrs, styleAttr };
+}
+
 function renderGroup(props: any): string {
   const tagName = props.tagName ?? 'div';
   const attrs: Record<string, unknown> = {};
@@ -49,11 +95,15 @@ function renderGroup(props: any): string {
 
   const classes = ['wp-block-group', props.className].filter(Boolean).join(' ');
   const classAttr = classes ? ` class="${escapeAttr(classes)}"` : '';
+
+  const { attrs: spacingAttrs, styleAttr } = buildSpacing(props);
+  Object.assign(attrs, spacingAttrs);
+
   const inner = renderWpNode(props.children);
 
   return [
     openBlockComment('group', attrs),
-    `<${tagName}${classAttr}>`,
+    `<${tagName}${classAttr}${styleAttr}>`,
     inner,
     `</${tagName}>`,
     closeBlockComment('group'),
@@ -103,12 +153,15 @@ function renderButtons(props: any): string {
   const attrs: Record<string, unknown> = {};
   if (props.className) attrs.className = props.className;
 
+  const { attrs: spacingAttrs, styleAttr } = buildSpacing(props);
+  Object.assign(attrs, spacingAttrs);
+
   const classes = ['wp-block-buttons', props.className].filter(Boolean).join(' ');
   const inner = renderWpNode(props.children);
 
   return [
     openBlockComment('buttons', attrs),
-    `<div class="${escapeAttr(classes)}">`,
+    `<div class="${escapeAttr(classes)}"${styleAttr}>`,
     inner,
     `</div>`,
     closeBlockComment('buttons'),
@@ -134,12 +187,15 @@ function renderColumns(props: any): string {
   const attrs: Record<string, unknown> = {};
   if (props.className) attrs.className = props.className;
 
+  const { attrs: spacingAttrs, styleAttr } = buildSpacing(props);
+  Object.assign(attrs, spacingAttrs);
+
   const classes = ['wp-block-columns', props.className].filter(Boolean).join(' ');
   const inner = renderWpNode(props.children);
 
   return [
     openBlockComment('columns', attrs),
-    `<div class="${escapeAttr(classes)}">`,
+    `<div class="${escapeAttr(classes)}"${styleAttr}>`,
     inner,
     `</div>`,
     closeBlockComment('columns'),
@@ -151,8 +207,15 @@ function renderColumn(props: any): string {
   if (props.width) attrs.width = props.width;
   if (props.className) attrs.className = props.className;
 
+  const { attrs: spacingAttrs, styleAttr: spacingStyle } = buildSpacing(props);
+  Object.assign(attrs, spacingAttrs);
+
   const classes = ['wp-block-column', props.className].filter(Boolean).join(' ');
-  const styleAttr = props.width ? ` style="flex-basis:${escapeAttr(props.width)}"` : '';
+  const flexStyle = props.width ? `flex-basis:${escapeAttr(props.width)}` : '';
+  const spacingCss = spacingStyle ? spacingStyle.slice(8, -1) : '';
+  const combinedStyle = [flexStyle, spacingCss].filter(Boolean).join(';');
+  const styleAttr = combinedStyle ? ` style="${combinedStyle}"` : '';
+
   const inner = renderWpNode(props.children);
 
   return [

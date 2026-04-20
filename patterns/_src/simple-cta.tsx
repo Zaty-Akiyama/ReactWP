@@ -1,4 +1,4 @@
-import { WpGroup, WpHeading, WpParagraph, WpLink, type PatternMeta } from '../../lib/wp';
+import { WpGroup, WpHeading, WpParagraph, WpLink, type PatternMeta, wpSpacing } from '../../lib/wp';
 import styles from './simple-cta.module.css';
 
 export const pattern: PatternMeta = {
@@ -10,7 +10,10 @@ export const pattern: PatternMeta = {
 
 export default function Pattern() {
   return (
-    <WpGroup className={styles.section}>
+    <WpGroup
+      margin={{ top: wpSpacing(50), bottom: wpSpacing(50) }}
+      padding={{ top: wpSpacing(70), bottom: wpSpacing(50) }}
+    > 
       <WpHeading level={1} className={styles.title}>お問い合わせはこちら</WpHeading>
       <WpParagraph>Web制作やデザインのご相談を受け付けています。</WpParagraph>
       <WpParagraph>

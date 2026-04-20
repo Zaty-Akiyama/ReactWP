@@ -7,8 +7,8 @@
  */
 ?>
 
-<!-- wp:group {"className":"simple-cta__section"} -->
-<div class="wp-block-group simple-cta__section">
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|50"},"margin":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}}} -->
+<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--50);margin-top:var(--wp--preset--spacing--50);margin-bottom:var(--wp--preset--spacing--50)">
 <!-- wp:heading {"level":1,"className":"simple-cta__title"} -->
 <h1 class="simple-cta__title">お問い合わせはこちら</h1>
 <!-- /wp:heading --><!-- wp:paragraph -->
