@@ -13,6 +13,8 @@ export const WP_LIST = '__wp_list__';
 export const WP_LIST_ITEM = '__wp_list_item__';
 export const WP_SEPARATOR = '__wp_separator__';
 export const WP_SPACER = '__wp_spacer__';
+export const WP_COVER = '__wp_cover__';
+export const WP_SHORTCODE = '__wp_shortcode__';
 
 export function wpSpacing(size: number | string): string {
   return `var:preset|spacing|${size}`;
@@ -86,6 +88,20 @@ type WpSpacerProps = {
   height?: string;
 };
 
+type WpCoverProps = WithChildren &
+  WithClassName &
+  SpacingProps &
+  WithBlockGap & {
+    url?: string;
+    id?: number;
+    alt?: string;
+    dimRatio?: number;
+};
+
+type WpShortcodeProps = {
+  children: string;
+};
+
 export function WpGroup(props: WpGroupProps) {
   return React.createElement(WP_GROUP as any, props, props.children);
 }
@@ -136,4 +152,61 @@ export function WpSeparator(props: WpSeparatorProps = {}) {
 
 export function WpSpacer(props: WpSpacerProps) {
   return React.createElement(WP_SPACER as any, props);
+}
+export function WpCover(props: WpCoverProps) {
+  return React.createElement(WP_COVER as any, props, props.children);
+}
+export const WP_NAVIGATION = '__wp_navigation__';
+export const WP_NAVIGATION_LINK = '__wp_navigation_link__';
+
+type WpNavigationProps = WithChildren &
+  WithClassName & {
+    overlayMenu?: 'never' | 'mobile' | 'always';
+    orientation?: 'horizontal' | 'vertical';
+    justifyContent?: 'left' | 'center' | 'right' | 'space-between';
+  };
+
+type WpNavigationLinkProps = WithClassName & {
+  label: string;
+  url: string;
+  kind?: 'custom' | 'post-type' | 'taxonomy';
+  opensInNewTab?: boolean;
+  rel?: string;
+};
+
+export function WpNavigation(props: WpNavigationProps) {
+  return React.createElement(
+    WP_NAVIGATION as any,
+    props,
+    props.children,
+  );
+}
+
+export function WpNavigationLink(props: WpNavigationLinkProps) {
+  return React.createElement(
+    WP_NAVIGATION_LINK as any,
+    props,
+  );
+}
+
+export const WP_HTML = '__wp_html__';
+
+type WpHtmlProps = {
+  children?: React.ReactNode;
+};
+
+export function WpHtml(props: WpHtmlProps) {
+  return React.createElement(
+    WP_HTML as any,
+    {},
+    props.children,
+  );
+}
+
+export function WpShortcode(props: WpShortcodeProps) {
+  return React.createElement(
+    WP_SHORTCODE as any,
+    {},
+    props.children,
+  );
 }
