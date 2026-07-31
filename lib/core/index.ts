@@ -15,4 +15,8 @@ export * from './cover/component.js';
 export * from './navigation/component.js';
 export * from './html/component.js';
 export * from './shortcode/component.js';
+export * from './post-title/component.js';
+export * from './post-excerpt/component.js';
+export * from './query/component.js';
+export * from './post-template/component.js';
 export * from './pattern.js';

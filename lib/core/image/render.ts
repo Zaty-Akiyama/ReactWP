@@ -5,9 +5,11 @@ export const renderImage: CoreBlockRenderer = (props, context) => {
   if (props.sizeSlug) attrs.sizeSlug = props.sizeSlug;
   if (props.className) attrs.className = props.className;
 
+  const resolvedSrc = context.resolveUrl(props.src ?? '');
+
   const sizeClass = props.sizeSlug ? `size-${props.sizeSlug}` : '';
   const classes = ['wp-block-image', sizeClass, props.className].filter(Boolean).join(' ');
-  const src = context.escapeAttr(props.src ?? '');
+  const src = resolvedSrc.htmlValue;
   const alt = context.escapeAttr(props.alt ?? '');
 
   return [

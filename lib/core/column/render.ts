@@ -5,14 +5,13 @@ export const renderColumn: CoreBlockRenderer = (props, context) => {
   if (props.width) attrs.width = props.width;
   if (props.className) attrs.className = props.className;
 
-  const { attrs: spacingAttrs, styleAttr: spacingStyle } = context.buildSpacing(props);
+  const { attrs: spacingAttrs, css: spacingCss } = context.buildSpacing(props);
   Object.assign(attrs, spacingAttrs);
 
   const classes = ['wp-block-column', props.className].filter(Boolean).join(' ');
-  const flexStyle = props.width ? `flex-basis:${context.escapeAttr(props.width)}` : '';
-  const spacingCss = spacingStyle ? spacingStyle.slice(8, -1) : '';
-  const combinedStyle = [flexStyle, spacingCss].filter(Boolean).join(';');
-  const styleAttr = combinedStyle ? ` style="${combinedStyle}"` : '';
+  const flexStyle = props.width ? `flex-basis:${props.width}` : '';
+  const combinedCss = [flexStyle, spacingCss].filter(Boolean).join(';');
+  const styleAttr = combinedCss ? ` style="${context.escapeAttr(combinedCss)}"` : '';
 
   const inner = context.renderNode(props.children);
 

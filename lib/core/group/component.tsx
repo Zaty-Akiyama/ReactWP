@@ -3,8 +3,18 @@ import type { WithChildren, WithClassName, SpacingProps, WithBlockGap } from '..
 
 export const WP_GROUP = '__wp_group__';
 
+export type WpGroupTagName =
+  | 'div'
+  | 'section'
+  | 'article'
+  | 'main'
+  | 'header'
+  | 'footer'
+  | 'aside'
+  | 'nav';
+
 export type WpGroupProps = WithChildren & WithClassName & SpacingProps & WithBlockGap & {
-  tagName?: string;
+  tagName?: WpGroupTagName;
 };
 
 export function WpGroup(props: WpGroupProps) {

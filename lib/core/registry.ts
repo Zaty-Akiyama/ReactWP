@@ -26,6 +26,10 @@ import {
 } from './navigation/index.js';
 import { WP_HTML, renderHtml } from './html/index.js';
 import { WP_SHORTCODE, renderShortcode } from './shortcode/index.js';
+import { WP_POST_TITLE, renderPostTitle } from './post-title/index.js';
+import { WP_POST_EXCERPT, renderPostExcerpt } from './post-excerpt/index.js';
+import { WP_QUERY, renderQuery } from './query/index.js';
+import { WP_POST_TEMPLATE, renderPostTemplate } from './post-template/index.js';
 
 const renderers = new Map<string, CoreBlockRenderer>([
   [WP_GROUP, renderGroup],
@@ -46,6 +50,10 @@ const renderers = new Map<string, CoreBlockRenderer>([
   [WP_NAVIGATION_LINK, renderNavigationLink],
   [WP_HTML, renderHtml],
   [WP_SHORTCODE, renderShortcode],
+  [WP_POST_TITLE, renderPostTitle],
+  [WP_POST_EXCERPT, renderPostExcerpt],
+  [WP_QUERY, renderQuery],
+  [WP_POST_TEMPLATE, renderPostTemplate],
 ]);
 
 export function renderCoreBlock(

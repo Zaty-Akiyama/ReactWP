@@ -10,8 +10,9 @@ export const renderGroup: CoreBlockRenderer = (props, context) => {
   const classes = ['wp-block-group', props.className].filter(Boolean).join(' ');
   const classAttr = classes ? ` class="${context.escapeAttr(classes)}"` : '';
 
-  const { attrs: spacingAttrs, styleAttr } = context.buildSpacing(props);
+  const { attrs: spacingAttrs, css: spacingCss } = context.buildSpacing(props);
   Object.assign(attrs, spacingAttrs);
+  const styleAttr = spacingCss ? ` style="${context.escapeAttr(spacingCss)}"` : '';
 
   const inner = context.renderNode(props.children);
 

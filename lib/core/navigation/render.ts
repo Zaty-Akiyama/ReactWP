@@ -26,7 +26,7 @@ export const renderNavigation: CoreBlockRenderer = (props, context) => {
   ].join('\n');
 };
 
-export const renderNavigationLink: CoreBlockRenderer = (props) => {
+export const renderNavigationLink: CoreBlockRenderer = (props, context) => {
   const attrs: Record<string, unknown> = {
     label: props.label,
     url: props.url,
@@ -46,5 +46,5 @@ export const renderNavigationLink: CoreBlockRenderer = (props) => {
     attrs.rel = props.rel;
   }
 
-  return `<!-- wp:navigation-link ${JSON.stringify(attrs)} /-->`;
+  return context.selfClosingBlockComment('navigation-link', attrs);
 };

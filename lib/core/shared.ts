@@ -1,5 +1,3 @@
-import { escapeAttr } from '../escapeAttr.js';
-
 export function serializeBlockAttrs(attrs: Record<string, unknown>): string {
   const cleaned = Object.fromEntries(
     Object.entries(attrs).filter(([, value]) => {
@@ -19,6 +17,11 @@ export function openBlockComment(name: string, attrs: Record<string, unknown>): 
 
 export function closeBlockComment(name: string): string {
   return `<!-- /wp:${name} -->`;
+}
+
+export function selfClosingBlockComment(name: string, attrs: Record<string, unknown>): string {
+  const json = serializeBlockAttrs(attrs);
+  return json ? `<!-- wp:${name} ${json} /-->` : `<!-- wp:${name} /-->`;
 }
 
 function presetToCss(value: string): string {
@@ -41,8 +44,12 @@ function resolveSpacing(property: string, value: string | Record<string, string>
   return { sides: Object.fromEntries(entries), css };
 }
 
-type SpacingResult = { attrs: Record<string, unknown>; styleAttr: string };
+type SpacingResult = { attrs: Record<string, unknown>; css: string };
 
+/**
+ * cssは未エスケープの生CSS文字列。style属性へ埋め込む際は、他のCSSと
+ * 連結してから呼び出し側でescapeAttr()を1回通すこと。
+ */
 export function buildSpacing(props: Record<string, any>): SpacingResult {
   const styleParts: string[] = [];
   const spacing: Record<string, unknown> = {};
@@ -63,6 +70,5 @@ export function buildSpacing(props: Record<string, any>): SpacingResult {
   }
 
   const attrs = Object.keys(spacing).length > 0 ? { style: { spacing } } : {};
-  const styleAttr = styleParts.length > 0 ? ` style="${escapeAttr(styleParts.join(';'))}"` : '';
-  return { attrs, styleAttr };
+  return { attrs, css: styleParts.filter(Boolean).join(';') };
 }

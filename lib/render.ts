@@ -12,6 +12,7 @@ import {
 import {
   openBlockComment,
   closeBlockComment,
+  selfClosingBlockComment,
   buildSpacing,
   serializeBlockAttrs,
 } from './core/shared.js';
@@ -166,6 +167,7 @@ export function renderWpNode(node: React.ReactNode): string {
       escapeAttr,
       openBlockComment,
       closeBlockComment,
+      selfClosingBlockComment,
       buildSpacing,
       resolveUrl,
     };

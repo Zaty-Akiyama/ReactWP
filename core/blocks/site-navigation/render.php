@@ -279,9 +279,25 @@ function reactwp_render_site_navigation_items(
             $target
         );
 
+        $link_classes = ['reactwp-site-navigation__link'];
+
+        if (!empty($item['linkClassName'])) {
+            $link_classes = array_merge(
+                $link_classes,
+                reactwp_site_navigation_parse_classes(
+                    $item['linkClassName']
+                )
+            );
+        }
+
         $link_attributes = [
             sprintf('href="%s"', esc_url($href)),
-            'class="reactwp-site-navigation__link"',
+            sprintf(
+                'class="%s"',
+                esc_attr(
+                    implode(' ', array_unique($link_classes))
+                )
+            ),
         ];
 
         if ($target !== '') {

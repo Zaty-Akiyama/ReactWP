@@ -17,6 +17,7 @@ type NavigationItem = {
   label: string;
   href: string;
   className?: string;
+  linkClassName?: string;
   target?: '_self' | '_blank';
   rel?: string;
 };
@@ -111,6 +112,11 @@ OriginalBlockRenderer = (
       ...(typeof childProps.className === 'string'
         ? {
             className: childProps.className,
+          }
+        : {}),
+      ...(typeof childProps.linkClassName === 'string'
+        ? {
+            linkClassName: childProps.linkClassName,
           }
         : {}),
       ...(childProps.target === '_self' ||

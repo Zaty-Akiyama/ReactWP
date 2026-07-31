@@ -27,9 +27,10 @@ export type CoreBlockRenderContext = {
   escapeAttr: (value: string) => string;
   openBlockComment: (name: string, attrs: Record<string, unknown>) => string;
   closeBlockComment: (name: string) => string;
+  selfClosingBlockComment: (name: string, attrs: Record<string, unknown>) => string;
   buildSpacing: (props: Record<string, any>) => {
     attrs: Record<string, unknown>;
-    styleAttr: string;
+    css: string;
   };
   resolveUrl: (value: string) => { blockValue: string; htmlValue: string };
 };

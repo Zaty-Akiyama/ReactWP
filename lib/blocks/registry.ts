@@ -7,6 +7,7 @@ import type {
 import {
   WP_SITE_NAVIGATION,
   WP_SITE_NAVIGATION_ICON,
+  WP_SITE_NAVIGATION_LIST,
   WP_SITE_NAVIGATION_ITEM,
   renderSiteNavigation,
 } from './site-navigation/index.js';
@@ -31,6 +32,12 @@ const renderers =
       WP_SITE_NAVIGATION_ICON,
       nestedOnlyRenderer(
         'WpSiteNavigationIcon',
+      ),
+    ],
+    [
+      WP_SITE_NAVIGATION_LIST,
+      nestedOnlyRenderer(
+        'WpSiteNavigationList',
       ),
     ],
     [
