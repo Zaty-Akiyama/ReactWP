@@ -6,8 +6,10 @@ import type {
 
 import {
   WP_SITE_NAVIGATION_ICON,
+  WP_SITE_NAVIGATION_LIST,
   WP_SITE_NAVIGATION_ITEM,
   WpSiteNavigationIcon,
+  WpSiteNavigationList,
   WpSiteNavigationItem,
 } from './component.js';
 
@@ -25,6 +27,15 @@ function isSiteNavigationIcon(
   return (
     type === WpSiteNavigationIcon ||
     type === WP_SITE_NAVIGATION_ICON
+  );
+}
+
+function isSiteNavigationList(
+  type: unknown,
+): boolean {
+  return (
+    type === WpSiteNavigationList ||
+    type === WP_SITE_NAVIGATION_LIST
   );
 }
 
@@ -66,6 +77,55 @@ OriginalBlockRenderer = (
   }
 
   let iconHtml = '';
+  let listClassName = '';
+  let hasList = false;
+
+  /**
+   * WpSiteNavigationItemをitems属性へ追加する。
+   */
+  const appendNavigationItem = (
+    child: React.ReactElement,
+  ): void => {
+    const childProps =
+      child.props as Record<string, unknown>;
+
+    const label =
+      typeof childProps.label === 'string'
+        ? childProps.label
+        : '';
+
+    const href =
+      typeof childProps.href === 'string'
+        ? childProps.href
+        : '';
+
+    if (label === '' || href === '') {
+      throw new Error(
+        'WpSiteNavigationItemにはlabelとhrefが必要です。',
+      );
+    }
+
+    items.push({
+      label,
+      href,
+      ...(typeof childProps.className === 'string'
+        ? {
+            className: childProps.className,
+          }
+        : {}),
+      ...(childProps.target === '_self' ||
+      childProps.target === '_blank'
+        ? {
+            target: childProps.target,
+          }
+        : {}),
+      ...(typeof childProps.rel === 'string'
+        ? {
+            rel: childProps.rel,
+          }
+        : {}),
+    });
+  };
 
   for (
     const child of React.Children.toArray(
@@ -79,6 +139,9 @@ OriginalBlockRenderer = (
     const childProps =
       child.props as Record<string, unknown>;
 
+    /**
+     * アイコン
+     */
     if (isSiteNavigationIcon(child.type)) {
       if (iconHtml !== '') {
         throw new Error(
@@ -87,7 +150,7 @@ OriginalBlockRenderer = (
       }
 
       const classes = [
-        'site-navigation__icon',
+        'reactwp-site-navigation__icon',
         typeof childProps.className === 'string'
           ? childProps.className
           : '',
@@ -107,50 +170,78 @@ OriginalBlockRenderer = (
       continue;
     }
 
-    if (isSiteNavigationItem(child.type)) {
-      const label =
-        typeof childProps.label === 'string'
-          ? childProps.label
-          : '';
-
-      const href =
-        typeof childProps.href === 'string'
-          ? childProps.href
-          : '';
-
-      if (!label || !href) {
+    /**
+     * リスト
+     */
+    if (isSiteNavigationList(child.type)) {
+      if (hasList) {
         throw new Error(
-          'WpSiteNavigationItemにはlabelとhrefが必要です。',
+          'WpSiteNavigationListは1つだけ指定できます。',
         );
       }
 
-      items.push({
-        label,
-        href,
-        ...(typeof childProps.className === 'string'
-          ? { className: childProps.className }
-          : {}),
-        ...(childProps.target === '_self' ||
-        childProps.target === '_blank'
-          ? { target: childProps.target }
-          : {}),
-        ...(typeof childProps.rel === 'string'
-          ? { rel: childProps.rel }
-          : {}),
-      });
+      hasList = true;
+
+      if (typeof childProps.className === 'string') {
+        listClassName = childProps.className;
+      }
+
+      for (
+        const listChild of React.Children.toArray(
+          childProps.children as React.ReactNode,
+        )
+      ) {
+        if (!React.isValidElement(listChild)) {
+          continue;
+        }
+
+        if (!isSiteNavigationItem(listChild.type)) {
+          const childName =
+            typeof listChild.type === 'function'
+              ? listChild.type.name
+              : String(listChild.type);
+
+          throw new Error(
+            'WpSiteNavigationList直下には' +
+            'WpSiteNavigationItemだけを配置できます。' +
+            ` 使用された要素: ${childName}`,
+          );
+        }
+
+        appendNavigationItem(listChild);
+      }
 
       continue;
     }
 
+    /**
+     * 後方互換のため、ListなしのItemも許可する。
+     */
+    if (isSiteNavigationItem(child.type)) {
+      appendNavigationItem(child);
+      continue;
+    }
+
+    const childName =
+      typeof child.type === 'function'
+        ? child.type.name
+        : String(child.type);
+
     throw new Error(
       'WpSiteNavigation直下には' +
-      'WpSiteNavigationIconまたは' +
-      'WpSiteNavigationItemだけを配置できます。',
+      'WpSiteNavigationIcon、' +
+      'WpSiteNavigationList、' +
+      'WpSiteNavigationItemだけを配置できます。' +
+      ` 使用された要素: ${childName}`,
     );
   }
 
-  if (iconHtml) {
+  if (iconHtml !== '') {
     attrs.iconHtml = iconHtml;
+  }
+
+  if (listClassName !== '') {
+    attrs.listClassName = listClassName;
   }
 
   if (items.length > 0) {

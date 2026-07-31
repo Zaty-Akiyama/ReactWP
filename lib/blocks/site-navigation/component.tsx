@@ -9,6 +9,9 @@ export const WP_SITE_NAVIGATION_ICON =
 export const WP_SITE_NAVIGATION_ITEM =
   '__wp_site_navigation_item__';
 
+export const WP_SITE_NAVIGATION_LIST =
+  '__wp_site_navigation_list__';
+
 export type WpSiteNavigationProps = {
   children?: React.ReactNode;
   className?: string;
@@ -23,10 +26,26 @@ export type WpSiteNavigationIconProps = {
   className?: string;
 };
 
+export type WpSiteNavigationListProps = {
+  children?: React.ReactNode;
+  className?: string;
+};
+
+export function WpSiteNavigationList(
+  props: WpSiteNavigationListProps,
+) {
+  return React.createElement(
+    WP_SITE_NAVIGATION_LIST as any,
+    props,
+    props.children,
+  );
+}
+
 export type WpSiteNavigationItemProps = {
   label: string;
   href: string;
   className?: string;
+  linkClassName?: string;
   target?: '_self' | '_blank';
   rel?: string;
 };

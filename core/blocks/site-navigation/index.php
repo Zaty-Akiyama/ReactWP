@@ -21,11 +21,44 @@ function reactwp_register_navigation_menus(): void
 
 add_action(
     'after_setup_theme',
-    'reactwp_register_navigation_menus'
+    'reactwp_register_navigation_menus',
+    99
 );
 
 function reactwp_register_site_navigation_block(): void
 {
+    $view_style_file  = __DIR__ . '/view.css';
+    $view_script_file = __DIR__ . '/view.js';
+
+    /**
+     * ナビゲーションブロック用CSS
+     */
+    if (is_readable($view_style_file)) {
+        wp_register_style(
+            'reactwp-site-navigation',
+            get_theme_file_uri(
+                'core/blocks/site-navigation/view.css'
+            ),
+            [],
+            (string) filemtime($view_style_file)
+        );
+    }
+
+    /**
+     * ナビゲーションブロック用JavaScript
+     */
+    if (is_readable($view_script_file)) {
+        wp_register_script(
+            'reactwp-site-navigation',
+            get_theme_file_uri(
+                'core/blocks/site-navigation/view.js'
+            ),
+            [],
+            (string) filemtime($view_script_file),
+            true
+        );
+    }
+
     register_block_type(
         'reactwp/site-navigation',
         [
@@ -60,6 +93,10 @@ function reactwp_register_site_navigation_block(): void
                     'default' => '',
                 ],
                 'iconHtml' => [
+                    'type'    => 'string',
+                    'default' => '',
+                ],
+                'listClassName' => [
                     'type'    => 'string',
                     'default' => '',
                 ],

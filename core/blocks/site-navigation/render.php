@@ -85,7 +85,8 @@ function reactwp_site_navigation_get_rel(
 function reactwp_render_assigned_site_navigation_menu(
     string $menu_location,
     string $list_id,
-    int $depth
+    int $depth,
+    string $list_class
 ): string {
     if (
         $menu_location === '' ||
@@ -106,7 +107,7 @@ function reactwp_render_assigned_site_navigation_menu(
             return $classes;
         }
 
-        $classes[] = 'site-navigation__item';
+        $classes[] = 'reactwp-site-navigation__item';
 
         return array_values(array_unique($classes));
     };
@@ -131,7 +132,7 @@ function reactwp_render_assigned_site_navigation_menu(
             )
             : [];
 
-        $classes[] = 'site-navigation__link';
+        $classes[] = 'reactwp-site-navigation__link';
         $attributes['class'] = implode(
             ' ',
             array_unique($classes)
@@ -151,7 +152,7 @@ function reactwp_render_assigned_site_navigation_menu(
             return $classes;
         }
 
-        $classes[] = 'site-navigation__sub-list';
+        $classes[] = 'reactwp-site-navigation__sub-list';
 
         return array_values(array_unique($classes));
     };
@@ -180,7 +181,7 @@ function reactwp_render_assigned_site_navigation_menu(
             'theme_location'          => $menu_location,
             'container'               => false,
             'menu_id'                 => $list_id,
-            'menu_class'              => 'site-navigation__list',
+            'menu_class'              => $list_class,
             'fallback_cb'             => false,
             'echo'                    => false,
             'depth'                   => $depth,
@@ -231,7 +232,8 @@ function reactwp_render_assigned_site_navigation_menu(
  */
 function reactwp_render_site_navigation_items(
     $items,
-    string $list_id
+    string $list_id,
+    string $list_class
 ): string {
     if (!is_array($items)) {
         return '';
@@ -256,7 +258,7 @@ function reactwp_render_site_navigation_items(
             continue;
         }
 
-        $item_classes = ['menu-item', 'site-navigation__item'];
+        $item_classes = ['menu-item', 'reactwp-site-navigation__item'];
 
         if (!empty($item['className'])) {
             $item_classes = array_merge(
@@ -279,7 +281,7 @@ function reactwp_render_site_navigation_items(
 
         $link_attributes = [
             sprintf('href="%s"', esc_url($href)),
-            'class="site-navigation__link"',
+            'class="reactwp-site-navigation__link"',
         ];
 
         if ($target !== '') {
@@ -311,8 +313,9 @@ function reactwp_render_site_navigation_items(
     }
 
     return sprintf(
-        '<ul id="%1$s" class="site-navigation__list">%2$s</ul>',
+        '<ul id="%1$s" class="%2$s">%3$s</ul>',
         esc_attr($list_id),
+        esc_attr($list_class),
         $item_html
     );
 }
@@ -477,10 +480,10 @@ function reactwp_render_site_navigation_icon(
 
     if ($icon_html === '') {
         $icon_html = implode('', [
-            '<span class="site-navigation__icon" aria-hidden="true">',
-            '<span class="site-navigation__line"></span>',
-            '<span class="site-navigation__line"></span>',
-            '<span class="site-navigation__line"></span>',
+            '<span class="reactwp-site-navigation__icon" aria-hidden="true">',
+            '<span class="reactwp-site-navigation__line"></span>',
+            '<span class="reactwp-site-navigation__line"></span>',
+            '<span class="reactwp-site-navigation__line"></span>',
             '</span>',
         ]);
     }
@@ -503,6 +506,28 @@ function reactwp_render_site_navigation(
     string $content = '',
     $block = null
 ): string {
+    if (
+        wp_style_is(
+            'reactwp-site-navigation',
+            'registered'
+        )
+    ) {
+        wp_enqueue_style(
+            'reactwp-site-navigation'
+        );
+    }
+
+    if (
+        wp_script_is(
+            'reactwp-site-navigation',
+            'registered'
+        )
+    ) {
+        wp_enqueue_script(
+            'reactwp-site-navigation'
+        );
+    }
+
     $menu_location = isset($attributes['menuLocation'])
         ? sanitize_key((string) $attributes['menuLocation'])
         : '';
@@ -514,16 +539,36 @@ function reactwp_render_site_navigation(
     $panel_id = wp_unique_id('site-navigation-panel-');
     $list_id  = $panel_id . '-list';
 
+    $list_classes = [
+        'reactwp-site-navigation__list',
+    ];
+
+    if (!empty($attributes['listClassName'])) {
+        $list_classes = array_merge(
+            $list_classes,
+            reactwp_site_navigation_parse_classes(
+                $attributes['listClassName']
+            )
+        );
+    }
+
+    $list_class = implode(
+        ' ',
+        array_unique($list_classes)
+    );
+
     $menu = reactwp_render_assigned_site_navigation_menu(
         $menu_location,
         $list_id,
-        $depth
+        $depth,
+        $list_class
     );
 
     if ($menu === '') {
         $menu = reactwp_render_site_navigation_items(
             $attributes['items'] ?? [],
-            $list_id
+            $list_id,
+            $list_class
         );
     }
 
@@ -561,7 +606,7 @@ function reactwp_render_site_navigation(
     );
 
     $wrapper_attributes = get_block_wrapper_attributes([
-        'class'                => 'site-navigation',
+        'class'                => 'reactwp-site-navigation',
         'aria-label'           => $aria_label,
         'data-site-navigation' => '',
     ]);
@@ -569,7 +614,7 @@ function reactwp_render_site_navigation(
     $html = sprintf(
         '<nav %1$s>' .
             '<button ' .
-                'class="site-navigation__toggle" ' .
+                'class="reactwp-site-navigation__toggle" ' .
                 'type="button" ' .
                 'aria-expanded="false" ' .
                 'aria-controls="%2$s" ' .
@@ -580,9 +625,14 @@ function reactwp_render_site_navigation(
             '>%5$s</button>' .
             '<div ' .
                 'id="%2$s" ' .
-                'class="site-navigation__panel" ' .
+                'class="reactwp-site-navigation__panel" ' .
                 'data-site-navigation-panel' .
             '>%6$s</div>' .
+            '<div ' .
+                'class="reactwp-site-navigation__opened-bg" ' .
+                'aria-hidden="true" ' .
+                'data-site-navigation-overlay' .
+            '></div>' .
         '</nav>',
         $wrapper_attributes,
         esc_attr($panel_id),
