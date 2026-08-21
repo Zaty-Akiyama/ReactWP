@@ -13,8 +13,15 @@ export type WpGroupTagName =
   | 'aside'
   | 'nav';
 
+export type WpGroupLayout = {
+  type: 'constrained';
+  contentSize?: string;
+  wideSize?: string;
+};
+
 export type WpGroupProps = WithChildren & WithClassName & SpacingProps & WithBlockGap & {
   tagName?: WpGroupTagName;
+  layout?: WpGroupLayout;
 };
 
 export function WpGroup(props: WpGroupProps) {

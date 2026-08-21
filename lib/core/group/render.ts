@@ -6,6 +6,7 @@ export const renderGroup: CoreBlockRenderer = (props, context) => {
 
   if (props.tagName) attrs.tagName = props.tagName;
   if (props.className) attrs.className = props.className;
+  if (props.layout) attrs.layout = props.layout;
 
   const classes = ['wp-block-group', props.className].filter(Boolean).join(' ');
   const classAttr = classes ? ` class="${context.escapeAttr(classes)}"` : '';
