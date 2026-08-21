@@ -38,6 +38,16 @@
   margin: 3rem 0;
 }
 
+.layout-components__section {
+  background: #f4f7fb;
+}
+
+.layout-components__panel {
+  border: 1px solid #b8c4d6;
+  border-radius: 8px;
+  background: #fff;
+}
+
 .simple-cta__section {
   padding: 4rem 2rem;
   text-align: center;
