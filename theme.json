@@ -6,6 +6,21 @@
       "margin": true,
       "blockGap": true,
       "units": ["px", "em", "rem", "%", "vh", "vw"]
+    },
+    "border": {
+      "radius": true,
+      "width": true,
+      "style": true,
+      "color": true
+    },
+    "custom": {
+      "border": {
+        "width": {
+          "thin": "1px",
+          "normal": "2px",
+          "bold": "4px"
+        }
+      }
     }
   }
 }

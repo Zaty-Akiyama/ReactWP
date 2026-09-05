@@ -1,0 +1,9 @@
+.section {
+  background: #f4f7fb;
+}
+
+.panel {
+  border: 1px solid #b8c4d6;
+  border-radius: 8px;
+  background: #fff;
+}

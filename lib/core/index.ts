@@ -20,3 +20,4 @@ export * from './post-excerpt/component.js';
 export * from './query/component.js';
 export * from './post-template/component.js';
 export * from './pattern.js';
+export * from './element/index.js';

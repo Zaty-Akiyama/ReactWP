@@ -6,6 +6,11 @@ include_once get_theme_file_path('core/bootstrap.php');
  */
 function reactwp_setup_editor_styles(): void
 {
+    /**
+     * WordPressが自動生成するFlow/FlexレイアウトCSSを無効化する。
+     */
+    add_theme_support('disable-layout-styles');
+
     add_editor_style([
         get_stylesheet_uri(),
         get_theme_file_uri('styles/patterns.css'),
@@ -14,7 +19,8 @@ function reactwp_setup_editor_styles(): void
 
 add_action(
     'after_setup_theme',
-    'reactwp_setup_editor_styles'
+    'reactwp_setup_editor_styles',
+    20
 );
 
 /**

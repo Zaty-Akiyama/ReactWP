@@ -12,6 +12,11 @@ import {
   renderSiteNavigation,
 } from './site-navigation/index.js';
 
+import {
+  WP_CONTACT_FORM,
+  renderContactForm,
+} from './contact-form/index.js';
+
 const nestedOnlyRenderer = (
   blockName: string,
 ): OriginalBlockRenderer => {
@@ -45,6 +50,10 @@ const renderers =
       nestedOnlyRenderer(
         'WpSiteNavigationItem',
       ),
+    ],
+    [
+      WP_CONTACT_FORM,
+      renderContactForm,
     ],
   ]);
 
