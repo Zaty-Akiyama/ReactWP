@@ -17,6 +17,14 @@ export type SpacingProps = {
 
 export type WithBlockGap = { blockGap?: string };
 
+/**
+ * `dataFrontHeader` のようなキーを `data-front-header` へ変換して出力するための型。
+ * useViewScript内のフロント処理がDOM取得に使う固定フックとして利用する。
+ */
+export type WithDataAttrs = {
+  [key: `data${string}`]: string | boolean | undefined;
+};
+
 export type CoreBlockProps = Record<string, any> & {
   children?: React.ReactNode;
 };
@@ -32,6 +40,10 @@ export type CoreBlockRenderContext = {
     attrs: Record<string, unknown>;
     css: string;
   };
+  buildDataAttrs: (
+    props: Record<string, any>,
+    escapeAttr: (value: string) => string,
+  ) => string;
   resolveUrl: (value: string) => { blockValue: string; htmlValue: string };
 };
 

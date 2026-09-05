@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["lib", "scripts", "patterns"]
+  "include": ["lib", "scripts", "patterns", "components", "core/runtime/_src"]
 }

@@ -14,12 +14,13 @@ export const renderGroup: CoreBlockRenderer = (props, context) => {
   const { attrs: spacingAttrs, css: spacingCss } = context.buildSpacing(props);
   Object.assign(attrs, spacingAttrs);
   const styleAttr = spacingCss ? ` style="${context.escapeAttr(spacingCss)}"` : '';
+  const dataAttrs = context.buildDataAttrs(props, context.escapeAttr);
 
   const inner = context.renderNode(props.children);
 
   return [
     context.openBlockComment('group', attrs),
-    `<${tagName}${classAttr}${styleAttr}>`,
+    `<${tagName}${classAttr}${styleAttr}${dataAttrs}>`,
     inner,
     `</${tagName}>`,
     context.closeBlockComment('group'),

@@ -5,7 +5,19 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import React from 'react';
+import esbuild from 'esbuild';
 import { renderWpNode, renderPatternPhp } from '../lib/render';
+import {
+  __beginPatternBuild,
+  __endPatternBuild,
+} from '../lib/runtime/view-script-context';
+import { buildViewScriptModule } from '../lib/runtime/view-script-transform';
+import {
+  resolveViewScriptId,
+  writeViewScript,
+  removeViewScript,
+  reconcileViewScripts,
+} from '../lib/runtime/view-script-writer';
 
 register(
   pathToFileURL(path.resolve('scripts/css-module-loader.mjs')).href,
@@ -15,6 +27,8 @@ register(
 const srcRoot = path.resolve('patterns/_src');
 const outRoot = path.resolve('patterns');
 
+const touchedViewScriptIds = new Set<string>();
+
 async function buildFile(file: string) {
   const mod = await import(pathToFileURL(file).href);
   const Component = mod.default;
@@ -23,8 +37,31 @@ async function buildFile(file: string) {
   if (!Component) throw new Error(`default export not found: ${file}`);
   if (!meta) throw new Error(`pattern export not found: ${file}`);
 
+  const fileBaseName = path.basename(file, '.tsx');
+
+  __beginPatternBuild();
   const element = React.createElement(Component);
-  const body = renderWpNode(element);
+  let body = renderWpNode(element);
+  const handler = __endPatternBuild();
+
+  if (handler) {
+    const id = resolveViewScriptId(meta.slug, fileBaseName);
+    const moduleSource = buildViewScriptModule(handler.toString(), meta.slug);
+
+    writeViewScript(id, moduleSource);
+    touchedViewScriptIds.add(id);
+
+    const viewScriptAttrs = JSON.stringify({ name: id });
+    body = `<!-- wp:reactwp/view-script ${viewScriptAttrs} /-->\n\n${body}`;
+  } else {
+    try {
+      const id = resolveViewScriptId(meta.slug, fileBaseName);
+      removeViewScript(id);
+    } catch {
+      // 識別名を解決できない場合、削除対象もないので何もしない
+    }
+  }
+
   const php = renderPatternPhp(meta, body);
 
   const relative = path.relative(srcRoot, file).replace(/\.tsx$/, '.php');
@@ -58,6 +95,18 @@ async function mergeCss() {
   );
 }
 
+async function buildRuntime() {
+  await esbuild.build({
+    entryPoints: ['core/runtime/_src/view-script-runtime.ts'],
+    outfile: 'core/runtime/view-script-runtime.js',
+    bundle: true,
+    format: 'iife',
+    target: ['es2020'],
+  });
+
+  console.log('Generated: core/runtime/view-script-runtime.js');
+}
+
 async function needsFullBuild(targetFile: string): Promise<boolean> {
   const perPatternDir = path.resolve('styles/_per-pattern');
   const allTsx = await fg('**/*.tsx', { cwd: srcRoot, absolute: true });
@@ -77,12 +126,15 @@ async function needsFullBuild(targetFile: string): Promise<boolean> {
 async function main() {
   const fileArg = process.argv.slice(2).find(a => a.startsWith('--file='))?.slice('--file='.length);
 
+  let isFullBuild = false;
+
   if (fileArg) {
     const file = path.resolve(fileArg);
     if (await needsFullBuild(file)) {
       console.log('Missing per-pattern CSS — falling back to full build');
       const files = await fg('**/*.tsx', { cwd: srcRoot, absolute: true });
       for (const f of files) await buildFile(f);
+      isFullBuild = true;
     } else {
       await buildFile(file);
     }
@@ -91,9 +143,17 @@ async function main() {
     for (const file of files) {
       await buildFile(file);
     }
+    isFullBuild = true;
+  }
+
+  // フルビルド時のみ、今回触れられなかった生成JSを掃除する
+  // (単一ファイルビルドで他パターンの生成物を誤って消さないため)
+  if (isFullBuild) {
+    reconcileViewScripts(touchedViewScriptIds);
   }
 
   await mergeCss();
+  await buildRuntime();
 }
 
 main().catch(console.error);

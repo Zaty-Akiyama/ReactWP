@@ -194,5 +194,31 @@ if (existsSync(componentsRoot)) {
   );
 }
 
+/**
+ * 共通ランタイムを監視
+ */
+const runtimeSrcRoot = path.resolve('core/runtime/_src');
+
+if (existsSync(runtimeSrcRoot)) {
+  watch(
+    runtimeSrcRoot,
+    {
+      recursive: true,
+      encoding: 'utf8',
+    },
+    (_, filename) => {
+      if (!filename || !filename.endsWith('.ts')) {
+        return;
+      }
+
+      scheduleRebuild(
+        'all',
+        `core/runtime/_src/${filename}`,
+      );
+    },
+  );
+}
+
 console.log(`Watching ${srcRoot} ...`);
 console.log(`Watching ${componentsRoot} ...`);
+console.log(`Watching ${runtimeSrcRoot} ...`);

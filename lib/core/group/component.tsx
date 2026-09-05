@@ -1,5 +1,5 @@
 import React from 'react';
-import type { WithChildren, WithClassName, SpacingProps, WithBlockGap } from '../types.js';
+import type { WithChildren, WithClassName, SpacingProps, WithBlockGap, WithDataAttrs } from '../types.js';
 
 export const WP_GROUP = '__wp_group__';
 
@@ -19,7 +19,7 @@ export type WpGroupLayout = {
   wideSize?: string;
 };
 
-export type WpGroupProps = WithChildren & WithClassName & SpacingProps & WithBlockGap & {
+export type WpGroupProps = WithChildren & WithClassName & SpacingProps & WithBlockGap & WithDataAttrs & {
   tagName?: WpGroupTagName;
   layout?: WpGroupLayout;
 };

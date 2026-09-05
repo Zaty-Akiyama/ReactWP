@@ -10,6 +10,8 @@ This repository is a WordPress block theme that defines blocks and patterns with
 - `core/` contains PHP and browser assets used at WordPress runtime.
 - `templates/`, `parts/`, `theme.json`, `functions.php`, and `style.css` form the WordPress theme entry points.
 - `styles/patterns.css` and `styles/_per-pattern/` are generated outputs; update their sources instead of editing them directly.
+- `core/runtime/_src/view-script-runtime.ts` is the browser runtime bundled by `npm run build:patterns` into `core/runtime/view-script-runtime.js`. A pattern can call `useViewScript(handler)` (from `lib/wp`) once, during render, to register front-end-only behavior; the build extracts the callback, bundles it per pattern under `assets/generated/view-scripts/`, and the `reactwp/view-script` block enqueues it only on pages that use that pattern. The callback may only reference its own parameters/locals and browser globals — no closures over outer variables.
+- The `reactwp/contact-form` block (`core/blocks/contact-form/`, `lib/blocks/contact-form/`) handles its own nonce, honeypot, rate limiting, and bot-signal blocking, and redirects to `/contact/` (errors) or `/contact/complete/` (success) via `admin-post.php`. A theme using this block must provide pages at those paths. Configure the notification recipient via the `REACTWP_CONTACT_ADMIN_EMAIL` constant or the `reactwp_contact_admin_recipient` filter (defaults to the site admin email), and override field definitions via the `reactwp_contact_form_fields` filter.
 
 ## Build, Test, and Development Commands
 

@@ -24,6 +24,37 @@ export function selfClosingBlockComment(name: string, attrs: Record<string, unkn
   return json ? `<!-- wp:${name} ${json} /-->` : `<!-- wp:${name} /-->`;
 }
 
+const DATA_ATTR_KEY_PATTERN = /^data[A-Z]/;
+
+function camelToKebabCase(name: string): string {
+  return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+/**
+ * `dataFrontHeader` のようなpropsキーを `data-front-header` 属性へ変換する。
+ * useViewScript内のフロント処理が固定セレクタとしてDOMを取得するために使う。
+ */
+export function buildDataAttrs(
+  props: Record<string, any>,
+  escapeAttr: (value: string) => string,
+): string {
+  return Object.entries(props)
+    .filter(([key, value]) => {
+      return (
+        DATA_ATTR_KEY_PATTERN.test(key) &&
+        value !== undefined &&
+        value !== false
+      );
+    })
+    .map(([key, value]) => {
+      const attrName = camelToKebabCase(key);
+      return value === true
+        ? ` ${attrName}`
+        : ` ${attrName}="${escapeAttr(String(value))}"`;
+    })
+    .join('');
+}
+
 function presetToCss(value: string): string {
   return value.replace(
     /^var:preset\|([^|]+)\|(.+)$/,

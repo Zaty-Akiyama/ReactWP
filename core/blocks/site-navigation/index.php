@@ -63,15 +63,19 @@ function reactwp_register_site_navigation_block(): void
         'reactwp/site-navigation',
         [
             'api_version'     => 3,
-            'title'           => __(
-                'サイトナビゲーション',
-                'reactwp'
-            ),
+            'title'           => __('サイトナビゲーション', 'reactwp'),
             'category'        => 'theme',
             'icon'            => 'menu',
-            'render_callback' =>
-                'reactwp_render_site_navigation',
-            'attributes'      => [
+            'render_callback' => 'reactwp_render_site_navigation',
+
+            'style_handles' => [
+                'reactwp-site-navigation',
+            ],
+            'view_script_handles' => [
+                'reactwp-site-navigation',
+            ],
+
+            'attributes' => [
                 'className' => [
                     'type'    => 'string',
                     'default' => '',
@@ -113,6 +117,7 @@ function reactwp_register_site_navigation_block(): void
                 'html'            => false,
                 'className'       => true,
                 'customClassName' => true,
+                'contentRole'     => true,
             ],
         ]
     );
